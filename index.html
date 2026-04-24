@@ -1,552 +1,1592 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<!-- dont forget run on terminal -->
-<!-- npx tailwindcss -i ./src/input.css -o ./src/output.css --watch -->
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Portfolio</title>
-    <link href="src/output.css" rel="stylesheet">
-    <link href="src/input.css" rel="stylesheet">
-    <link rel="shortcut icon" href="img/icon.ico" type="image/x-icon">
-    <meta name="keywords" content="gigihling, gigih ling, bladphoenix,bladphoenix portfolio" />
-    <meta name="description" content="Hello Everyone I am Gigih Ling SEO Specialist | Web Design, I can bring boring ads to live | Color Me." />
-    <link rel="alternate" href="https://bladphoenix.github.io/portfolio/">
-    <link rel="canonical" href="https://bladphoenix.github.io/portfolio/">
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('prefers-color-scheme: dark').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+    <title>Gigih Ling — SEO Specialist & Web Designer</title>
+    <meta name="description" content="Gigih Ling — SEO Specialist & Web Designer. I bring boring ads to life.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Default: DARK MODE VARIABLES */
+        --green: #22c55e;
+        --green-dark: #16a34a;
+        --green-dim: rgba(34,197,94,0.12);
+        --bg: #080c0e;
+        --bg2: #0f1518;
+        --bg3: #141c20;
+        --card: rgba(255,255,255,0.04);
+        --border: rgba(255,255,255,0.08);
+        --text: #e8edf0;
+        --muted: #7a8a92;
+        --white: #ffffff;
+        
+        /* Tema khusus UI */
+        --nav-bg: rgba(8,12,14,0.9);
+        --mob-menu-bg: rgba(8,12,14,0.97);
+        --modal-bg: rgba(8, 12, 14, 0.95);
+        --noise-op: 0.5;
+
+        --radius: 16px;
+        --transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* OVERRIDE UNTUK LIGHT MODE */
+    body.light-mode {
+        --bg: #ffffff;
+        --bg2: #f8fafc;
+        --bg3: #f1f5f9;
+        --card: rgba(0,0,0,0.03);
+        --border: rgba(0,0,0,0.08);
+        --text: #334155;
+        --muted: #64748b;
+        --white: #0f172a; /* Teks putih diubah menjadi gelap agar terbaca */
+        
+        /* Tema khusus UI untuk Light Mode */
+        --nav-bg: rgba(255,255,255,0.9);
+        --mob-menu-bg: rgba(255,255,255,0.97);
+        --modal-bg: rgba(255, 255, 255, 0.95);
+        --noise-op: 0.15; /* Noise dibuat lebih tipis di light mode */
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        overflow-x: hidden;
+        transition: background-color var(--transition), color var(--transition); /* Efek mulus saat ganti tema */
+    }
+
+    /* ── CANVAS BG ── */
+    #bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.55;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: var(--noise-op);
+        transition: opacity var(--transition);
+    }
+
+    /* ── SHARED ── */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 2;
+    }
+    section { position: relative; }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 16px;
+    }
+    .tag::before {
+        content: '';
+        display: block;
+        width: 24px;
+        height: 1px;
+        background: var(--green);
+    }
+
+    h2.section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        color: var(--white);
+        line-height: 1.15;
+    }
+
+    /* ── NAVBAR ── */
+    nav.navbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 100;
+        padding: 0 32px;
+        transition: background var(--transition), box-shadow var(--transition);
+    }
+    nav.navbar.scrolled {
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .nav-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--white);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--green); }
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        list-style: none;
+    }
+    .nav-links a {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.3s;
+        position: relative;
+    }
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: -4px;
+        width: 0; height: 1px;
+        background: var(--green);
+        transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+        padding: 10px 24px;
+        background: var(--green);
+        color: #000 !important;
+        border-radius: 100px;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        transition: opacity 0.3s, transform 0.3s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── CONTROLS (THEME & MENU) ── */
+    .nav-controls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    /* THEME SWITCH BUTTON */
+    .theme-switch {
+        background: none;
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.3s, color 0.3s;
+    }
+    .theme-switch:hover { background: var(--card); color: var(--green); }
+    .theme-switch svg { width: 20px; height: 20px; }
+    
+    /* Logic memunculkan Sun/Moon berdasarkan class di body */
+    .theme-switch .moon { display: none; }
+    body.light-mode .theme-switch .sun { display: none; }
+    body.light-mode .theme-switch .moon { display: block; }
+
+    /* hamburger */
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+    }
+    .hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--white);
+        border-radius: 2px;
+        transition: var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 72px 0 0 0;
+        background: var(--mob-menu-bg);
+        backdrop-filter: blur(24px);
+        z-index: 99;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 36px;
+        padding: 40px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    .mobile-menu a:hover { color: var(--green); }
+
+    /* ── HERO ── */
+    #home {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 120px 0 80px;
+    }
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px 6px 6px;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        margin-bottom: 28px;
+        font-size: 13px;
+        color: var(--muted);
+    }
+    .hero-badge-dot {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: var(--green-dim);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .hero-badge-dot::after {
+        content: '';
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%,100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.6; }
+    }
+    .hero-name {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(3rem, 7vw, 5.5rem);
+        font-weight: 900;
+        line-height: 1.0;
+        color: var(--white);
+        letter-spacing: -0.03em;
+        margin-bottom: 8px;
+    }
+    .hero-name .green { color: var(--green); }
+    .hero-role {
+        font-family: 'Space Mono', monospace;
+        font-size: 14px;
+        color: var(--green);
+        letter-spacing: 0.1em;
+        margin-bottom: 20px;
+    }
+    .hero-desc {
+        font-size: 17px;
+        color: var(--muted);
+        max-width: 440px;
+        margin-bottom: 40px;
+        line-height: 1.75;
+    }
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .btn-primary {
+        padding: 14px 32px;
+        background: var(--green);
+        color: #000;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 15px;
+        text-decoration: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(34,197,94,0.35);
+    }
+    .btn-outline {
+        padding: 14px 32px;
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 100px;
+        font-weight: 500;
+        font-size: 15px;
+        text-decoration: none;
+        transition: border-color 0.3s, background 0.3s;
+        background: var(--card);
+        backdrop-filter: blur(12px);
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    .hero-avatar-ring {
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        border: 1px solid var(--green-dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        animation: rotateRing 12s linear infinite;
+    }
+    @keyframes rotateRing { to { transform: rotate(360deg); } }
+    .hero-avatar-ring::before {
+        content: '';
+        position: absolute;
+        inset: 20px;
+        border-radius: 50%;
+        border: 1px dashed rgba(34,197,94,0.2);
+    }
+    .hero-avatar-inner {
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 40% 35%, rgba(34,197,94,0.18), transparent 60%), var(--bg3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: rotateRing 12s linear infinite reverse;
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+    .hero-avatar-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .orbit-dot {
+        position: absolute;
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        top: 10px; left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 12px var(--green);
+    }
+
+    /* ── STATS ── */
+    .stats-bar {
+        padding: 48px 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: var(--bg2);
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+    }
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+        border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: 900;
+        color: var(--white);
+        line-height: 1;
+    }
+    .stat-num span { color: var(--green); }
+    .stat-label {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+        letter-spacing: 0.05em;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+        padding: 120px 0;
+        background: var(--bg);
+    }
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+    }
+    .about-left h2 { margin-bottom: 24px; }
+    .about-left p {
+        font-size: 17px;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+    .social-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 36px;
+        flex-wrap: wrap;
+    }
+    .social-btn {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        text-decoration: none;
+        transition: border-color 0.3s, color 0.3s, background 0.3s, transform 0.3s;
+        font-size: 15px;
+    }
+    .social-btn:hover {
+        border-color: var(--green);
+        color: var(--green);
+        background: var(--green-dim);
+        transform: translateY(-3px);
+    }
+    .about-right {
+        position: relative;
+    }
+    .experience-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px;
+        backdrop-filter: blur(20px);
+        margin-bottom: 20px;
+        transition: border-color var(--transition), transform var(--transition);
+    }
+    .experience-card:hover { border-color: rgba(34,197,94,0.3); transform: translateX(6px); }
+    .exp-year {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--green);
+        letter-spacing: 0.15em;
+        margin-bottom: 8px;
+    }
+    .exp-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--white);
+        margin-bottom: 6px;
+    }
+    .exp-desc { font-size: 14px; color: var(--muted); }
+
+    /* ── PORTFOLIO ── */
+    #portfolio {
+        padding: 120px 0;
+        background: var(--bg2); 
+    }
+    .portfolio-header {
+        margin-bottom: 64px;
+    }
+    .portfolio-header h2 { margin-bottom: 12px; }
+    .portfolio-header p { color: var(--muted); font-size: 16px; }
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    .portfolio-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+        cursor: pointer;
+        position: relative;
+        group: true;
+    }
+    .portfolio-card:hover {
+        border-color: rgba(34,197,94,0.4);
+        transform: translateY(-6px);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+    .portfolio-card:nth-child(1) { grid-column: span 2; }
+    .port-thumb {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: var(--bg3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .port-thumb-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0.15;
+        transition: opacity 0.4s;
+    }
+    .portfolio-card:hover .port-thumb-bg { opacity: 0.25; }
+    .port-emoji {
+        position: relative;
+        z-index: 1;
+        width: 100%; 
+        height: 100%;
+        filter: drop-shadow(0 4px 20px rgba(34,197,94,0.3));
+    }
+    .port-emoji img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top; 
+        cursor: zoom-in;
+    }
+    .port-body {
+        padding: 24px;
+    }
+    .port-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .port-tag {
+        padding: 3px 10px;
+        background: var(--green-dim);
+        color: var(--green);
+        border-radius: 100px;
+        font-size: 11px;
+        font-family: 'Space Mono', monospace;
+        letter-spacing: 0.05em;
+    }
+    .port-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--white);
+        margin-bottom: 6px;
+    }
+    .port-desc { font-size: 13px; color: var(--muted); }
+    .port-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--green);
+        font-weight: 600;
+        text-decoration: none;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    .portfolio-card:hover .port-link { opacity: 1; transform: translateY(0); }
+
+    /* ── SKILLS ── */
+    #skills {
+        padding: 120px 0;
+        background: var(--bg); 
+    }
+    .skills-header {
+        text-align: center;
+        margin-bottom: 64px;
+    }
+    .skills-header p {
+        font-size: 16px;
+        color: var(--muted);
+        max-width: 520px;
+        margin: 16px auto 0;
+    }
+    .skills-categories {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 48px;
+    }
+    .skill-cat-btn {
+        padding: 8px 20px;
+        border-radius: 100px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        font-size: 13px;
+        font-family: 'DM Sans', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .skill-cat-btn.active, .skill-cat-btn:hover {
+        border-color: var(--green);
+        color: var(--green);
+        background: var(--green-dim);
+    }
+    .skills-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+    .skill-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 14px;
+        color: var(--text);
+        transition: all 0.3s;
+        cursor: default;
+        white-space: nowrap;
+    }
+    .skill-chip .icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+    .skill-chip:hover {
+        border-color: var(--green);
+        color: var(--white);
+        background: var(--green-dim);
+        transform: translateY(-2px);
+    }
+
+    /* ── CLIENTS ── */
+    #clients {
+        padding: 120px 0;
+        background: var(--bg2);
+        overflow: hidden;
+    }
+    .clients-header { text-align: center; margin-bottom: 60px; }
+    .clients-header h2 { margin-bottom: 12px; }
+    .clients-header p { color: var(--muted); font-size: 16px; }
+    .marquee-wrap { overflow: hidden; }
+    .marquee-track {
+        display: flex;
+        gap: 24px;
+        animation: marquee 22s linear infinite;
+        width: max-content;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+    
+    .client-card {
+        flex-shrink: 0;
+        padding: 0 40px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.3s;
+        height: 100px;
+        min-width: 220px;
+    }
+    .client-card:hover { border-color: rgba(34,197,94,0.3); }
+
+    .client-logo {
+        max-width: 140px;
+        max-height: 45px;
+        object-fit: contain; 
+        filter: grayscale(100%) opacity(0.6); 
+        transition: filter 0.4s ease, transform 0.4s ease;
+    }
+    .client-card:hover .client-logo {
+        filter: grayscale(0%) opacity(1);
+        transform: scale(1.05);
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+        padding: 120px 0;
+        background: var(--bg);
+    }
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+    }
+    .contact-left h2 { margin-bottom: 20px; }
+    .contact-left p {
+        font-size: 17px;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 40px;
+    }
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .contact-info-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        background: var(--green-dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .contact-info-label { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; }
+    .contact-info-val { font-size: 15px; color: var(--white); font-weight: 500; margin-top: 2px; }
+
+    /* Form */
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.05em;
+    }
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        backdrop-filter: blur(12px);
+    }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+    }
+    .form-textarea { height: 140px; resize: vertical; }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+    .btn-send {
+        padding: 16px 36px;
+        background: var(--green);
+        color: #000;
+        border: none;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(34,197,94,0.35);
+    }
+    .btn-send:active { transform: translateY(0); opacity: 0.85; }
+    #form-success {
+        display: none;
+        padding: 16px 20px;
+        background: rgba(34,197,94,0.1);
+        border: 1px solid rgba(34,197,94,0.3);
+        border-radius: 12px;
+        color: var(--green);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+        background: var(--bg2);
+        border-top: 1px solid var(--border);
+        padding: 40px 0;
+        position: relative;
+        z-index: 2;
+    }
+    .footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: gap;
+        gap: 16px;
+    }
+    .footer-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--white);
+        text-decoration: none;
+    }
+    .footer-logo span { color: var(--green); }
+    .footer-copy { font-size: 13px; color: var(--muted); }
+    .footer-copy a { color: var(--green); text-decoration: none; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── BACK TO TOP ── */
+    #back-top {
+        position: fixed;
+        bottom: 32px; right: 32px;
+        width: 48px; height: 48px;
+        background: var(--green);
+        color: #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.4s, transform 0.4s;
+        z-index: 99;
+        box-shadow: 0 8px 24px rgba(34,197,94,0.3);
+    }
+    #back-top.show { opacity: 1; transform: translateY(0); }
+    #back-top:hover { box-shadow: 0 12px 36px rgba(34,197,94,0.5); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+        .hero-grid { grid-template-columns: 1fr; text-align: center; }
+        .hero-desc { margin: 0 auto 32px; }
+        .hero-actions { justify-content: center; }
+        .hero-visual { margin-top: 40px; }
+        .hero-avatar-ring { width: 280px; height: 280px; }
+        .hero-avatar-inner { width: 220px; height: 220px; font-size: 72px; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .stat-item:nth-child(2) { border-right: none; }
+        .about-grid { grid-template-columns: 1fr; gap: 48px; }
+        .portfolio-grid { grid-template-columns: 1fr; }
+        .portfolio-card:nth-child(1) { grid-column: span 1; }
+        .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+        .nav-links { display: none; }
+        .hamburger { display: flex; }
+    }
+    @media (max-width: 540px) {
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .portfolio-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── IMAGE POPUP MODAL ── */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 99999; 
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--modal-bg); /* Berubah sesuai tema */
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        transform: scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .image-modal.show .modal-content {
+        transform: scale(1);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        color: var(--muted);
+        font-size: 40px;
+        font-weight: 300;
+        cursor: pointer;
+        transition: color 0.3s, transform 0.3s;
+        line-height: 1;
+    }
+
+    .close-modal:hover {
+        color: var(--green);
+        transform: scale(1.1);
+    }
+</style>
 </head>
-
 <body>
-    <!-- header start -->
-    <header class="bg-transparent absolute top-0 left-0 w-full flex items-center z-10">
-        <div class="container" id="Home">
-            <div class="flex items-center justify-between relative">
-                <div class="px-4">
-                    <a href="#home" class="font-bold text-lg text-primary block py-6">Gigih Ling</a>
-                </div>
-                <div class="flex items-center px-4">
-                    <button id="hamburger" name="hamburger" type="button" class="block absolute right-4 lg:hidden">
-                        <span class="hamburger-line origin-top-left transition duration-300 ease-in-out"></span>
-                        <span class="hamburger-line transition duration-300 ease-in-out"></span>
-                        <span class="hamburger-line origin-top-left transition duration-300 ease-in-out"></span>
-                    </button>
-                    <nav id="nav-menu"
-                    class="hidden absolute py-5 bg-white shadow-lg rounded-lg max-w-[250px] w-full right-4 top-full lg:block lg:static lg:bg-transparent lg:max-w-full lg:shadow-none lg:rounded-none dark:bg-dark lg:dark:bg-transparent dark:shadow-slate-500">
-                    <ul class="block lg:flex">
-                        <li class="group">
-                            <a href="#home"
-                            class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Home</a>
-                        </li>
-                        <li class="group">
-                            <a href="resume/resume.pdf" target="_blank" class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Resume</a>
-                        </li>
-                        <li class="group">
-                            <a href="#about"
-                            class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">About</a>
-                        </li>
-                        <li class="group">
-                            <a href="#portfolio"
-                            class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Portfolio</a>
-                        </li>
-                        <li class="group">
-                            <a href="#clients"
-                            class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Clients</a>
-                        </li>
-                            <!-- <li class="group">
-                                <a href="#blog"
-                                    class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Blog</a>
-                            </li> -->
-                            <li class="group">
-                                <a href="#contact"
-                                class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Contact</a>
-                            </li>
 
-                            <li class="mt-3 lg:mt-0 flex items-center pl-8">
-                                <div class="flex">
-                                    <span class="mr-2 text-sm text-slate-500">🔆</span>
-                                    <input type="checkbox" class="hidden" id="dark-toggle">
-                                    <label for="dark-toggle">
-                                        <div
-                                        class="flex h-5 w-9 cursor-pointer items-center rounded-full bg-slate-500 p-1">
-                                        <div
-                                        class="toggle-circle h-4 w-4 rounded-full bg-white transition duration-300 ease-in-out">
-                                    </div>
-                                </div>
-                            </label>
-                            <span class="ml-2 text-sm text-slate-500">🌒</span>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
+    <canvas id="bg-canvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a href="#home" class="nav-logo">Gigih<span>.</span></a>
+        
+        <ul class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#portfolio">Portfolio</a></li> 
+          <li><a href="#skills">Skills</a></li>        
+          <li><a href="#clients">Clients</a></li>
+          <li>
+            <a href="resume/resume.pdf" target="_blank" class="text-base text-dark py-2 mx-8 flex group-hover:text-primary dark:text-white">Resume</a>
+        </li>
+    </ul>
+
+    <div class="nav-controls">
+      <button class="theme-switch" id="theme-switch" aria-label="Toggle Theme">
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+
+      <a href="#contact" class="nav-cta" style="display: none;">Contact Me</a> <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+      </button>
+  </div>
 </div>
-</header>
-<!-- header end -->
+</nav>
 
-<!-- hero section start -->
-<section id="home" class="pt-36 dark:bg-dark">
-    <div class="container">
-        <div class="flex flex-wrap">
-            <div class="w-full self-center px-4 lg:w-1/2">
-                <h1 class="text-base font-semibol text-primary md:text-xl lg:text-2xl">Hello Everyone 🙌, I am
-                    <span class="block font-bold text-dark text-4xl mt-1 lg:text-5xl dark:text-white">Gigih Ling
-                    </span>
-                </h1>
-                <h2 class="font-medium text-slate-500 mt-2 text-lg mb-5 lg:text-2xl dark:text-slate-400">SEO
-                Specialist | Web Design</h2>
-                <p class="font-medium text-slate-400 mb-10 dark:text-slate-400">I can bring boring ads to live |
-                Color Me</p>
-                <a href="https://t.me/LingLtd" target="_blank"
-                class="text-base font-semibold text-white bg-primary py-3 px-8 rounded-full hover:shadow-lg hover:opacity-90 transition duration-300 ease-in-out">Contact
-            Me</a>
-        </div>
-        <div class="w-full self-end px-4 lg:w-1/2">
-            <div class="relative mt-10 lg:mt-9 lg:right-0">
-                <img src="img/meling.png" alt="Ling" class="relative z-10 max-w-full mx-auto inline ">
-                <span
-                class="absolute -buttom-0  left-1/2 -translate-x-1/2 sm:scale-50 md:scale-125 lg:scale-500">
-                <svg width="400" height="400" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#24A148"
-                    d="M65.3,-21.1C72.9,2.2,59.3,32.6,37.5,47.4C15.7,62.2,-14.3,61.6,-32.4,47.7C-50.5,33.8,-56.8,6.7,-49.4,-16.3C-42,-39.4,-21,-58.2,3.9,-59.5C28.8,-60.8,57.7,-44.4,65.3,-21.1Z"
-                    transform="translate(100 100) scale(1.1)" />
-                </svg>
-            </span>
-        </div>
-    </div>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#home" class="mob-link">Home</a>
+  <a href="#about" class="mob-link">About</a>
+  <a href="#portfolio" class="mob-link">Portfolio</a> 
+  <a href="#skills" class="mob-link">Skills</a>        
+  <a href="#clients" class="mob-link">Clients</a>
+  <a href="#contact" class="mob-link">Contact</a>
 </div>
-</div>
-</section>
-<!-- hero section end -->
 
-<!-- about section start -->
-<section id="about" class="pt-36 pb-32 dark:bg-dark">
-    <div class="container">
-        <div class="flex flex-wrap">
-            <div class="w-full px-4 mb-10 lg:w-1/2">
-                <h4 class="font-bold uppercase text-primary text-lg mb-3">About Me</h4>
-                <h2 class="font-bold text-dark text-2xl mb-5 max-w-md md:text-4xl dark:text-white">Welcome to the
-                world of SEO</h2>
-                <p class="font-medium text-slate-500 text-xl max-w-xl lg:text-2xl">Search Engine Optimization, or
-                more commonly known as SEO, is not just an acronym.</p>
-            </div>
-            <div class="w-full px-4 lg:w-1/2">
-                <h3 class="font-semibold text-dark text-2xl mb-4 lg:text-3xl lg:pt-10 dark:text-white">let's be
-                friends</h3>
-                <p class="font-medium text-base text-slate-500 mb-6 lg:text-lg">In the following pages, we will
-                    explore the art of initiating conversations, creating strong bonds, and keeping the flame of
-                friendship burning bright.</p>
-                <div class="flex items-center">
-                    <!-- youtube -->
-                    <a href="https://www.youtube.com/@whateverinc4609" target="_blank"
-                    class="w-9 h-9 mr-9 rounded-full flex justify-center items-center border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white">
-                    <svg class="fill-current" width="20" role="img" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <title>YouTube</title>
-                    <path
-                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                </svg>
-            </a>
-
-            <!-- instagram -->
-            <a href="https://www.instagram.com/gigih_id/" target="_blank"
-            class="w-9 h-9 mr-9 rounded-full flex justify-center items-center border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white">
-            <svg width="20" class="fill-current" role="img" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <title>Instagram</title>
-            <path
-            d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077" />
-        </svg>
-    </a>
-
-    <!-- google map -->
-    <a href="https://maps.app.goo.gl/9ddn8m4gdcgTGwbM9" target="_blank"
-    class="w-9 h-9 mr-9 rounded-full flex justify-center items-center border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white">
-    <svg class="fill-current" width="20" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <title>Google Maps</title>
-        <path d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/>
-    </svg>
-</a>
-
-<!-- linkedin -->
-<a href="https://www.linkedin.com/in/gigih-wijaya-5b645118b/" target="_blank"
-class="w-9 h-9 mr-9 rounded-full flex justify-center items-center border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white">
-<svg class="fill-current" width="20" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <title>LinkedIn</title>
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-</svg>
-</a>
-
-<!-- github -->
-<a href="https://github.com/bladphoenix/" target="_blank"
-class="w-9 h-9 mr-9 rounded-full flex justify-center items-center border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white">
-<svg class="fill-current" width="20" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <title>GitHub</title>
-    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-</svg>
-</a>
-
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- about section end -->
-
-
-<!-- skiils -->
-<section id="clients" class="pt-36 pb-32 bg-slate-700 dark:bg-slate-300">
-    <div class="container">
-        <div class="w-full px-4">
-            <div class="mx-auto text-center mb-16">
-                <h4 class="font-semibold text-lg text-primary mb-2 uppercase">Tech Skills</h4>
-                <h2 class="font-bold text-white text-3xl mb-4 sm:text-4xl lg:text-5xl dark:text-dark">Programming, Design, SEO Tools</h2>
-                <!-- <h4 class="font-semibold text-lg text-primary mb-2 uppercase">Programming, Database, Library, Framework, Web Server, Tools Design, Operating System, Other</h4> -->
-            </div>
-        </div>
-
-        <div class="w-full px-4">
-            <div class="flex flex-wrap items-center justify-center">
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/html.png" alt="HTML">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/css-3.png" alt="CSS">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/javascript.png" alt="javascript">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/php.png" alt="php">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/python.png" alt="php">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/sql-file.png" alt="SQL">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/bootstrap.png" alt="SQL">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/jsquery.svg" alt="jQuery">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/Tailwind_CSS.png" alt="Tailwind">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/social-media.png" alt="Codeigniter">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/physics.png" alt="React JS">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/nextjs.png" alt="Next JS">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/laravel.png" alt="Laravel">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/nginx.png" alt="Nginx">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/openresty.png" alt="Open Resty">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/nodejs.png" alt="Node JS">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/wordpress.png" alt="Wordpress">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/git.png" alt="Git">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/adwords.png" alt="Google Ads">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/meta.png" alt="Meta Pixel">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/figma.png" alt="Figma">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/illustrator.png" alt="Adobe Illustrator">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/photoshop.png" alt="Adobe Photoshop">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/sketchup.png" alt="Google sketchup">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/canva-logo.png" alt="Canva">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/windows.png" alt="Windows">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/linux.png" alt="Linux">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/macos.png" alt="Mac OS">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/office.png" alt="Microsoft Office">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/Cloudflare_Logo.png" alt="Cloudflare">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/Ahrefslogo.png" alt="Ahrefs">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/logo-logomark.png" alt="Firebase">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/cloudinary.jpg" alt="Cloudinary">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/DigitalOcean.png" alt="Digital Ocean">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/Tencent_Cloud_Logo.svg.png" alt="Tencent Cloud">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/zerossl.png" alt="Zero SSl">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/google-analytic.webp" alt="Google Analytic">
-                </a>
-                <a href="#" target="_blank" class="max-w-[120px] mx-1 py-2 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 ">
-                    <img width="45%" src="img/skills/google-search-console.svg" alt="Google Search Console">
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- end of skiils -->
-
-<!-- portfolio section start  -->
-<section id="portfolio" class="pt-36 pb-16 bg-slate-100 dark:bg-slate-800">
-    <div class="container">
-        <div class="w-full px-4">
-            <div class="max-w-xl mx-auto text-center mb-16">
-                <h4 class="font-semibold text-lg text-primary mb-2 uppercase ">Portfolio</h4>
-                <h2 class="font-bold text-dark text-3xl mb-4 sm:text-4xl lg:text-5xl dark:text-white">Latest Project
-                </h2>
-                <p class="font-medium text-md text-slate-500 md:text-lg">Revolutionizing Collaboration in the Digital Workspace.</p>
-            </div>
-        </div>
-        <div class="w-full px-4 flex flex-wrap justify-center xl:w-13">
-
-            <!-- portfolio 1 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio1.png" alt="malang news" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Malang News</h3>
-                <p class="font-medium text-base text-slate-500">news website about the city of Malang</p>
-            </div>
-
-            <!-- portfolio 2 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio2.png" alt="malang strudel" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Malang Strudel</h3>
-                <p class="font-medium text-base text-slate-500">Creation of the Abimanyu Strudel website</p>
-            </div>
-
-            <!-- portfolio 3 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio3.png" alt="personal Blog" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Personal Blog</h3>
-                <p class="font-medium text-base text-slate-500">Personal websites are built using materialize CSS</p>
-            </div>
-
-            <!-- portfolio 4 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio4.png" alt="beautiful news" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Beautiful News</h3>
-                <p class="font-medium text-base text-slate-500">Simple news website using wordpress</p>
-            </div>
-
-            <!-- portfolio 5 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio5.png" alt="beautiful news" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Website PSHT ranting singosari</h3>
-                <p class="font-medium text-base text-slate-500">The PSHT website was built using the Laravel framework</p>
-            </div>
-
-
-            <!-- portfolio 6 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio6.png" alt="React Movie" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">React Movie</h3>
-                <p class="font-medium text-base text-slate-500">The film website was built using React JS, and API Get from the service provider</p>
-            </div>
-
-            <!-- portfolio 7 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio9.png" alt="web app psht singosari" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">PSHT data management web application</h3>
-                <p class="font-medium text-base text-slate-500">Data storage PSHT website application, built on Laravel</p>
-            </div>
-
-            <!-- portfolio 8 -->
-            <div class="mb-12 p-4 md:w-1/2">
-                <div class="rounded-md shadow-md overflow-hidden">
-                    <img src="img/portfolio8.png" alt="web app barenlitbang" width="w-full">
-                </div>
-                <h3 class="font-semibold text-xl text-dark mt-5 dark:text-white">Web App</h3>
-                <p class="font-medium text-base text-slate-500">Barenlitbang Malang City Information System</p>
-            </div>
-
-        </div>
-    </div>
-</section>
-<!-- portfolio section end  -->
-
-<!-- Client section start -->
-<section id="clients" class="pt-36 pb-32 bg-slate-700 dark:bg-slate-300">
-    <div class="container">
-        <div class="w-full px-4">
-            <div class="mx-auto text-center mb-16">
-                <h4 class="font-semibold text-lg text-primary mb-2 uppercase">Clients</h4>
-                <h2 class="font-bold text-white text-3xl mb-4 sm:text-4xl lg:text-5xl dark:text-dark">companies that went beyond their goals</h2>
-            </div>
-        </div>
-
-        <div class="w-full px-4">
-            <div class="flex flex-wrap items-center justify-center">
-
-                <a href="https://www.abimanyutravel.id/" target="_blank"
-                class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-                <img src="img/clients/abimanyu.png" alt="abimanyu travel malang">
-            </a>
-
-            <a href="https://www.abimanyu.id/" target="_blank"
-            class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-            <img src="img/clients/abimanyukoi.png" alt="abimanyu koi malang">
+<section id="home">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge reveal">
+          <div class="hero-badge-dot"></div>
+          Available for new projects
+      </div>
+      <p class="hero-role reveal reveal-delay-1">SEO Specialist & Web Designer</p>
+      <h1 class="hero-name reveal reveal-delay-1">
+          Hello, I'm<br><span class="green">Gigih Ling</span>
+      </h1>
+      <p class="hero-desc reveal reveal-delay-2">
+          I bring boring ads to life and craft digital experiences that resonate. Specializing in SEO, web design, and digital marketing.
+      </p>
+      <div class="hero-actions reveal reveal-delay-3">
+          <a href="https://t.me/LingLtd" target="_blank" class="btn-primary">
+             Get in Touch
         </a>
-
-        <a href="https://www.pertaminalubricants.com/" target="_blank"
-        class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-        <img src="img/clients/pertamina.png" alt="pertamina">
-    </a>
-
-    <a href="https://wikawaterheater.co.id/" target="_blank"
-    class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-    <img src="img/clients/wikawh.png" alt="wikawh">
-</a>
-
-<a href="http://beautifulmalang.com/" target="_blank"
-class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-<img src="img/clients/beautiful.png" alt="beautiful malang">
-</a>
-
-<a href="https://www.seo-webhosting.com/" target="_blank"
-class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-<img src="img/clients/Seohost.png" alt="seo web hosting">
-</a>
-
-<a href="http://lambdaconsulting.co.id/" target="_blank"
-class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-<img src="img/clients/lambda.png" alt="lambda consulting malang">
-</a>
-
-<a href="https://www.instagram.com/meubelmatahari/" target="_blank"
-class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-<img src="img/clients/matahari.png" alt="meubel matahari malang">
-</a>
-
-<a href="https://maps.app.goo.gl/sT7htknRdg3qi6s17" target="_blank"
-class="max-w-[120px] mx-4 py-4 grayscale opacity-60 transition duration-500 hover:grayscale-0 hover:opacity-100 lg:mx-6 xl:mx-6">
-<img src="img/clients/suryabaru.png" alt="cv surya baru">
-</a>
-
-</div>
-</div>
-</div>
-</section>
-<!-- client section end -->
-
-<!-- contact sestion start -->
-<section id="contact" class="pt-36 pb-32 dark:bg-slate-800">
-    <div class="container">
-        <div class="w-full px-4">
-            <div class="max-w-xl mx-auto text-center mb-16">
-                <h4 class="font-semibold text-primary uppercase">Contact Me</h4>
-                <h2 class="font-bold text-dark text-3xl mb-4 sm:text-4xl lg:text-5xl dark:text-white">Message to Me
-                </h2>
-                
-            </div>
-        </div>
-        <form action="" method="post">
-            <div class="w-full lg:w-2/3 lg:mx-auto">
-                <div class="w-full px-4 mb-8">
-                    <label for="name" class="text-base font-bold text-primary">Name</label>
-                    <input type="text" id="name"
-                    class="w-full bg-slate-200 text-dark p-3 rounded-md focus-outline-none focus:ring-primary focus:ring-1 focus:border-primary">
-                </div>
-
-                <div class="w-full px-4 mb-8">
-                    <label for="name" class="text-base font-bold text-primary">Email</label>
-                    <input type="email" id="email"
-                    class="w-full bg-slate-200 text-dark p-3 rounded-md focus-outline-none focus:ring-primary focus:ring-1 focus:border-primary">
-                </div>
-
-                <div class="w-full px-4 mb-8">
-                    <label for="name" class="text-base font-bold text-primary">Message</label>
-                    <textarea type="email" id="email"
-                    class="w-full bg-slate-200 text-dark p-3 rounded-md focus-outline-none focus:ring-primary focus:ring-1 focus:border-primary h-32"></textarea>
-                </div>
-                <div class="w-full">
-                    <button type="submit"
-                    class="text-base font-semibold text-white bg-primary py-3 px-8 rounded-full w-full hover:opacity-80 hover:shadow-lg transition duration-500">Send</button>
-                </div>
-            </div>
-        </form>
+        <a href="#portfolio" class="btn-outline">View Work</a>
     </div>
+</div>
+<div class="hero-visual reveal reveal-delay-2">
+    <div class="hero-avatar-ring">
+      <div class="orbit-dot"></div>
+      <div class="hero-avatar-inner"><img src="img/meling.png" alt="Gigih Ling"></div>
+  </div>
+</div>
+</div>
+</div>
 </section>
-<!-- contact section end -->
 
-<!-- footer start -->
-<footer class="bg-dark pb-12">
-    <div class="container">
-        <div class="w-full pt-10 border-t border-slate-700">
-            <p class="font-medium text-sm text-slate-500 text-center">Copyright ©️ Gigihling 2024 using <a
-                href="https://tailwindcss.com/" target="_blank" class=" text-sky-500">Tailwind CSS</a></p>
-            </div>
-        </div>
-    </footer>
-    <!-- footer end -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-num">5<span>+</span></div>
+        <div class="stat-label">Years Experience</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-num">9<span>+</span></div>
+        <div class="stat-label">Clients Served</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-num">8<span>+</span></div>
+        <div class="stat-label">Projects Done</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-num">30<span>+</span></div>
+        <div class="stat-label">Tech Skills</div>
+    </div>
+</div>
+</div>
+</div>
 
-    <!-- back to top start -->
-    <a href="#home"
-    class="fixed bottom-4 right-4 z-[9999] hidden h-4 w-14 items-center justify-center rounded-full bg-primary p-4 hover:animate-pulse"
-    id="to-top">
-    <span class="mt-2 block h-5 w-5 rotate-45 border-t-2 border-l-2"></span>
-</a>
-<!-- back to top end -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-left">
+        <div class="tag reveal">About Me</div>
+        <h2 class="section-title reveal reveal-delay-1">Welcome to the world of SEO</h2>
+        <p class="reveal reveal-delay-2">
+          Search Engine Optimization is not just an acronym — it's a craft. I combine technical SEO expertise with creative web design to help businesses stand out in the digital landscape.
+      </p>
+      <p class="reveal reveal-delay-2">
+          Based in Malang, Indonesia. Open to remote collaborations worldwide. Let's build something great together.
+      </p>
+      <div class="social-links reveal reveal-delay-3">
+          <a href="https://www.youtube.com/@whateverinc4609" target="_blank" class="social-btn" title="YouTube">
+            <svg width="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/gigih_id/" target="_blank" class="social-btn" title="Instagram">
+            <svg width="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/gigih-wijaya-5b645118b/" target="_blank" class="social-btn" title="LinkedIn">
+            <svg width="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://github.com/bladphoenix/" target="_blank" class="social-btn" title="GitHub">
+            <svg width="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+        <a href="https://maps.app.goo.gl/AQe1npft45eibBY67" target="_blank" class="social-btn" title="Location">
+            <svg width="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+            </svg>
+        </a>
+    </div>
+</div>
+<div class="about-right">
+    <div class="experience-card reveal">
+      <div class="exp-year">2020 — PRESENT</div>
+      <div class="exp-title">SEO Specialist & Digital Marketer</div>
+      <div class="exp-desc">Google Ads, Meta Pixel, Analytics, Search Console, Ahrefs — full-stack SEO strategy and execution.</div>
+  </div>
+  <div class="experience-card reveal reveal-delay-1">
+      <div class="exp-year">2019 — PRESENT</div>
+      <div class="exp-title">Full-Stack Web Developer</div>
+      <div class="exp-desc">Building with Laravel, React, Next.js, Node.js and deploying on DigitalOcean, Tencent Cloud, Cloudflare.</div>
+  </div>
+  <div class="experience-card reveal reveal-delay-2">
+      <div class="exp-year">2018 — PRESENT</div>
+      <div class="exp-title">UI/UX & Graphic Designer</div>
+      <div class="exp-desc">Figma, Adobe Illustrator, Photoshop, Canva — from wireframe to pixel-perfect production.</div>
+  </div>
+</div>
+</div>
+</div>
+</section>
 
-<script src="src/script.js"></script>
+<section id="portfolio">
+  <div class="container">
+    <div class="portfolio-header reveal">
+      <div class="tag">Portfolio</div>
+      <h2 class="section-title">Latest Projects</h2>
+      <p>Revolutionizing collaboration in the digital workspace.</p>
+  </div>
+  <div class="portfolio-grid">
+      <div class="portfolio-card reveal">
+        <div class="port-thumb">
+          <div class="port-thumb-bg" style="background: linear-gradient(135deg,#22c55e,#16a34a);"></div>
+          <div class="port-emoji"><img src="https://bladphoenix.github.io/portfolio/img/portfolio1.png" alt="Malang News"></div>
+      </div>
+      <div class="port-body">
+          <div class="port-tags"><span class="port-tag">WordPress</span><span class="port-tag">SEO</span></div>
+          <div class="port-title">Malang News</div>
+          <div class="port-desc">A comprehensive news website dedicated to covering stories about the city of Malang.</div>
+          <a href="#" class="port-link">View Project →</a>
+      </div>
+  </div>
+  <div class="portfolio-card reveal reveal-delay-1">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#f59e0b,#d97706);"></div>
+      <div class="port-emoji"> <img src="https://bladphoenix.github.io/portfolio/img/portfolio2.png" alt="Malang Strudel"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">Web Design</span></div>
+      <div class="port-title">Malang Strudel</div>
+      <div class="port-desc">Creation of the Abimanyu Strudel brand website.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#6366f1,#4f46e5);"></div>
+      <div class="port-emoji"> <img src="https://bladphoenix.github.io/portfolio/img/portfolio3.png" alt="Personal Blog"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">Materialize CSS</span></div>
+      <div class="port-title">Personal Blog</div>
+      <div class="port-desc">Personal website built with Materialize CSS framework.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal reveal-delay-1">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#ec4899,#be185d);"></div>
+      <div class="port-emoji"> <img src="https://bladphoenix.github.io/portfolio/img/portfolio4.png" alt="Beautiful News"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">WordPress</span></div>
+      <div class="port-title">Beautiful News</div>
+      <div class="port-desc">Simple elegant news website using WordPress.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal reveal-delay-1">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#14b8a6,#0f766e);"></div>
+      <div class="port-emoji"> <img src="https://bladphoenix.github.io/portfolio/img/portfolio5.png" alt="PSHT Singosari"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">Laravel</span></div>
+      <div class="port-title">PSHT Singosari</div>
+      <div class="port-desc">Organization website built using the Laravel framework.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal reveal-delay-2">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#f97316,#ea580c);"></div>
+      <div class="port-emoji"><img src="https://bladphoenix.github.io/portfolio/img/portfolio6.png" alt="React Movie"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">React JS</span><span class="port-tag">API</span></div>
+      <div class="port-title">React Movie</div>
+      <div class="port-desc">Film website built with React JS using a third-party movie API.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#8b5cf6,#7c3aed);"></div>
+      <div class="port-emoji"> <img src="https://bladphoenix.github.io/portfolio/img/portfolio9.png" alt="PSHT Data Management"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">Laravel</span><span class="port-tag">Web App</span></div>
+      <div class="port-title">PSHT Data Management</div>
+      <div class="port-desc">Data storage and management web application built on Laravel.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+<div class="portfolio-card reveal reveal-delay-1">
+    <div class="port-thumb">
+      <div class="port-thumb-bg" style="background: linear-gradient(135deg,#0ea5e9,#0284c7);"></div>
+      <div class="port-emoji"><img src="https://bladphoenix.github.io/portfolio/img/portfolio8.png" alt="Barenlitbang Info System"></div>
+  </div>
+  <div class="port-body">
+      <div class="port-tags"><span class="port-tag">Government</span><span class="port-tag">Web App</span></div>
+      <div class="port-title">Barenlitbang Info System</div>
+      <div class="port-desc">Malang City Information System for the Barenlitbang department.</div>
+      <a href="#" class="port-link">View Project →</a>
+  </div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <div class="skills-header reveal">
+      <div class="tag">Tech Skills</div>
+      <h2 class="section-title">Programming, Design & SEO Tools</h2>
+      <p>A full arsenal of modern tools and technologies to bring any vision to life.</p>
+  </div>
+  <div class="skills-categories reveal">
+      <button class="skill-cat-btn active" data-cat="all">All</button>
+      <button class="skill-cat-btn" data-cat="code">Code</button>
+      <button class="skill-cat-btn" data-cat="design">Design</button>
+      <button class="skill-cat-btn" data-cat="seo">SEO & Marketing</button>
+      <button class="skill-cat-btn" data-cat="cloud">Cloud & Infra</button>
+  </div>
+  <div class="skills-grid reveal" id="skills-grid">
+  </div>
+</div>
+</section>
+
+<section id="clients">
+  <div class="container">
+    <div class="clients-header reveal">
+      <div class="tag">Clients</div>
+      <h2 class="section-title">Companies That Went Beyond Their Goals</h2>
+      <p>Trusted by local businesses and national brands across Indonesia.</p>
+  </div>
+</div>
+<div class="marquee-wrap reveal">
+    <div class="marquee-track" id="marquee">
+    </div>
+</div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-left">
+        <div class="tag reveal">Contact</div>
+        <h2 class="section-title reveal reveal-delay-1">Let's Work Together</h2>
+        <p class="reveal reveal-delay-2">Have a project in mind or just want to say hello? I'd love to hear from you. Let's create something amazing.</p>
+        <div class="reveal reveal-delay-2">
+          <div class="contact-info-item">
+            <div class="contact-info-icon">💬</div>
+            <div>
+              <div class="contact-info-label">TELEGRAM</div>
+              <div class="contact-info-val">@LingLtd</div>
+          </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📍</div>
+        <div>
+          <div class="contact-info-label">LOCATION</div>
+          <div class="contact-info-val">Taman Sari, West Jakarta City, Indonesia</div>
+      </div>
+  </div>
+</div>
+</div>
+<div class="reveal reveal-delay-1">
+    <div class="contact-form">
+      <div class="form-group">
+        <label class="form-label">NAME</label>
+        <input type="text" class="form-input" placeholder="Your full name" id="inp-name">
+    </div>
+    <div class="form-group">
+        <label class="form-label">EMAIL</label>
+        <input type="email" class="form-input" placeholder="your@email.com" id="inp-email">
+    </div>
+    <div class="form-group">
+        <label class="form-label">MESSAGE</label>
+        <textarea class="form-textarea" placeholder="Tell me about your project..." id="inp-msg"></textarea>
+    </div>
+    <div id="form-success">✓ Message sent! I'll get back to you soon.</div>
+    <button class="btn-send" onclick="handleSend()">
+        Send Message 
+    </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#home" class="footer-logo">Gigih<span>.</span></a>
+      <p class="footer-copy">© 2024 Gigihling — Built with ♥ using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank">modern CSS</a></p>
+  </div>
+</div>
+</footer>
+
+<a href="#home" id="back-top">↑</a>
+
+<div id="image-modal" class="image-modal">
+  <span class="close-modal" id="close-modal">×</span>
+  <img class="modal-content" id="modal-img" alt="Portfolio Full View">
+</div>
+
+<script>
+/* ── THEME TOGGLE (DARK/LIGHT MODE) ── */
+    const themeSwitch = document.getElementById('theme-switch');
+    
+    // Cek apakah user sudah pernah memilih light mode sebelumnya
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+    }
+
+    themeSwitch.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        // Simpan preferensi di localStorage
+        if (document.body.classList.contains('light-mode')) {
+            localStorage.setItem('theme', 'light');
+        } else {
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+/* ── CANVAS PARTICLES ── */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.r = Math.random() * 1.5 + 0.4;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.life = Math.random();
+        this.maxLife = Math.random() * 0.006 + 0.002;
+        this.growing = true;
+    }
+    update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.growing) {
+          this.life += this.maxLife;
+          if (this.life >= 1) this.growing = false;
+      } else {
+          this.life -= this.maxLife;
+          if (this.life <= 0) this.reset();
+      }
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.life * 0.5;
+    ctx.fillStyle = `rgba(34,197,94,1)`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+// Green glow orbs
+    const orbs = [
+      { x: 0.15, y: 0.2, r: 300, c: 'rgba(34,197,94,0.08)' },
+      { x: 0.85, y: 0.7, r: 250, c: 'rgba(34,197,94,0.06)' },
+      { x: 0.5, y: 0.5, r: 200, c: 'rgba(34,197,94,0.04)' },
+  ];
+
+  function draw() {
+      ctx.clearRect(0, 0, W, H);
+      orbs.forEach(o => {
+        const g = ctx.createRadialGradient(o.x*W, o.y*H, 0, o.x*W, o.y*H, o.r);
+        g.addColorStop(0, o.c);
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(o.x*W, o.y*H, o.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(draw);
+  }
+  draw();
+
+/* ── SKILLS DATA ── */
+  const skills = [
+      { icon: '🌐', name: 'HTML5', cat: 'code' },
+      { icon: '🎨', name: 'CSS3', cat: 'code' },
+      { icon: '⚡', name: 'JavaScript', cat: 'code' },
+      { icon: '🐘', name: 'PHP', cat: 'code' },
+      { icon: '🐍', name: 'Python', cat: 'code' },
+      { icon: '🗄️', name: 'SQL', cat: 'code' },
+      { icon: '⚛️', name: 'React JS', cat: 'code' },
+      { icon: '▲', name: 'Next.js', cat: 'code' },
+      { icon: '🔴', name: 'Laravel', cat: 'code' },
+      { icon: '💛', name: 'jQuery', cat: 'code' },
+      { icon: '🎀', name: 'Bootstrap', cat: 'code' },
+      { icon: '🌊', name: 'Tailwind CSS', cat: 'code' },
+      { icon: '🟢', name: 'Node.js', cat: 'code' },
+      { icon: '🔷', name: 'WordPress', cat: 'code' },
+      { icon: '🐙', name: 'Git', cat: 'code' },
+      { icon: '✏️', name: 'Figma', cat: 'design' },
+      { icon: '🖌️', name: 'Illustrator', cat: 'design' },
+      { icon: '🖼️', name: 'Photoshop', cat: 'design' },
+      { icon: '📐', name: 'SketchUp', cat: 'design' },
+      { icon: '🎨', name: 'Canva', cat: 'design' },
+      { icon: '📈', name: 'Google Ads', cat: 'seo' },
+      { icon: '📘', name: 'Meta Pixel', cat: 'seo' },
+      { icon: '📊', name: 'Google Analytics', cat: 'seo' },
+      { icon: '🔍', name: 'Search Console', cat: 'seo' },
+      { icon: '🔗', name: 'Ahrefs', cat: 'seo' },
+      { icon: '📱', name: 'Social Media', cat: 'seo' },
+      { icon: '🌩️', name: 'Cloudflare', cat: 'cloud' },
+      { icon: '🔵', name: 'DigitalOcean', cat: 'cloud' },
+      { icon: '🔥', name: 'Firebase', cat: 'cloud' },
+      { icon: '☁️', name: 'Tencent Cloud', cat: 'cloud' },
+      { icon: '🖼️', name: 'Cloudinary', cat: 'cloud' },
+      { icon: '🔒', name: 'ZeroSSL', cat: 'cloud' },
+      { icon: '🛡️', name: 'Nginx', cat: 'cloud' },
+      { icon: '🐧', name: 'Linux', cat: 'cloud' },
+  ];
+
+  let currentCat = 'all';
+  function renderSkills() {
+      const grid = document.getElementById('skills-grid');
+      const filtered = currentCat === 'all' ? skills : skills.filter(s => s.cat === currentCat);
+      grid.innerHTML = filtered.map(s => `
+    <div class="skill-chip">
+      <span class="icon">${s.icon}</span>${s.name}
+    </div>
+      `).join('');
+  }
+  renderSkills();
+
+  document.querySelectorAll('.skill-cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.skill-cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCat = btn.dataset.cat;
+        renderSkills();
+    });
+  });
+
+/* ── CLIENTS MARQUEE ── */
+  const clients = [
+    { src: 'img/clients/abimanyu.png', alt: 'Abimanyu Travel' },
+    { src: 'img/clients/abimanyukoi.png', alt: 'Abimanyu Koi' },
+    { src: 'img/clients/pertamina.png', alt: 'Pertamina' },
+    { src: 'img/clients/wikawh.png', alt: 'Wika Water Heater' },
+    { src: 'img/clients/beautiful.png', alt: 'Beautiful Malang' },
+    { src: 'img/clients/Seohost.png', alt: 'SEO Webhosting' },
+    { src: 'img/clients/lambda.png', alt: 'Lambda Consulting' },
+    { src: 'img/clients/matahari.png', alt: 'Meubel Matahari' },
+    { src: 'img/clients/suryabaru.png', alt: 'CV Surya Baru' },
+];
+
+function buildMarquee() {
+  const track = document.getElementById('marquee');
+  const doubled = [...clients, ...clients, ...clients]; 
+  track.innerHTML = doubled.map(c => `
+    <div class="client-card">
+      <img src="${c.src}" alt="${c.alt}" class="client-logo">
+    </div>
+  `).join('');
+}
+buildMarquee();
+
+/* ── NAVBAR ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+  document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+});
+
+/* ── HAMBURGER ── */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+document.querySelectorAll('.mob-link').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+});
+});
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+/* ── FORM ── */
+function handleSend() {
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const msg = document.getElementById('inp-msg').value.trim();
+  if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
+  document.getElementById('form-success').style.display = 'block';
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-email').value = '';
+  document.getElementById('inp-msg').value = '';
+  setTimeout(() => document.getElementById('form-success').style.display = 'none', 4000);
+}
+
+/* ── PORTFOLIO IMAGE POPUP (LIGHTBOX) ── */
+const imageModal = document.getElementById('image-modal');
+const modalImg = document.getElementById('modal-img');
+const closeModalBtn = document.getElementById('close-modal');
+const portfolioImages = document.querySelectorAll('.port-emoji img');
+
+// Fungsi untuk membuka modal
+portfolioImages.forEach(img => {
+  img.addEventListener('click', (e) => {
+    e.stopPropagation(); // Mencegah event bubbling
+    imageModal.classList.add('show');
+    modalImg.src = img.src; // Ambil source dari gambar yang diklik
+    document.body.style.overflow = 'hidden'; // Hilangkan scroll pada background
+});
+});
+
+// Fungsi untuk menutup modal
+const closeImageModal = () => {
+  imageModal.classList.remove('show');
+  setTimeout(() => {
+    modalImg.src = ''; // Bersihkan src setelah animasi selesai
+}, 300);
+  document.body.style.overflow = ''; // Kembalikan scroll
+};
+
+// Tutup saat tombol X diklik
+closeModalBtn.addEventListener('click', closeImageModal);
+
+// Tutup saat mengklik area gelap di luar gambar
+imageModal.addEventListener('click', (e) => {
+  if (e.target === imageModal) {
+    closeImageModal();
+}
+});
+
+// Tutup menggunakan tombol 'Escape' pada keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && imageModal.classList.contains('show')) {
+    closeImageModal();
+}
+});
+</script>
 </body>
 </html>
