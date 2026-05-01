@@ -1,42 +1,101 @@
-# 🚀 Gigih Ling - SEO Specialist & Web Designer Portfolio
+# Gigih Ling — Portfolio (React JS)
 
-Selamat datang di repositori portofolio pribadi saya. Website ini dirancang untuk menampilkan keahlian saya dalam **SEO Optimization**, **Web Design**, dan **Digital Marketing**. Dibangun dengan fokus pada kecepatan, estetika modern, dan pengalaman pengguna yang mulus.
+## 🗂️ Struktur Proyek
+
+```
+├── index.html            ← Entry HTML (Vite)
+├── vite.config.js        ← Konfigurasi Vite + React plugin
+├── package.json          ← Dependensi & scripts
+├── Portfolio.jsx         ← Komponen utama (semua section)
+└── src/
+    └── main.jsx          ← Mount React ke DOM
+```
+
+## 🚀 Cara Menjalankan
+
+### 1. Install dependensi
+```bash
+npm install
+```
+
+### 2. Jalankan development server
+```bash
+npm run dev
+```
+Buka browser di `http://localhost:5173`
+
+### 3. Build untuk production
+```bash
+npm run build
+```
+Output ada di folder `dist/`
+
+### 4. Preview hasil build
+```bash
+npm run preview
+```
 
 ---
 
-## 🎨 Preview Website
-Anda dapat melihat versi live dari website ini di sini: 
-👉 **[bladphoenix.github.io/portfolio/](https://bladphoenix.github.io/portfolio/)**
+## ✅ Fitur yang Dikonversi
+
+| Fitur | Status |
+|---|---|
+| Dark / Light Mode (dengan localStorage) | ✅ |
+| Canvas particle animation | ✅ |
+| Navbar scroll + hamburger mobile menu | ✅ |
+| Hero section + animasi orbit avatar | ✅ |
+| Stats bar | ✅ |
+| About + experience cards | ✅ |
+| Portfolio grid + Load More | ✅ |
+| Image lightbox (klik gambar → modal) | ✅ |
+| Skills accordion + progress bar animasi | ✅ |
+| Clients marquee (auto-scroll) | ✅ |
+| Contact form (FormSubmit AJAX) | ✅ |
+| Scroll Reveal (IntersectionObserver) | ✅ |
+| Back to top button | ✅ |
+| Footer | ✅ |
 
 ---
 
-## ✨ Fitur Unggulan
+## 🧩 Arsitektur Komponen React
 
-* **🌓 Dark & Light Mode:** Transisi tema yang halus dengan penyimpanan preferensi pengguna via `localStorage`.
-* **🍱 Bento Grid Layout:** Susunan proyek portofolio yang dinamis menggunakan sistem grid modern (khususnya untuk proyek utama seperti Whitebox.asia).
-* **📱 Fully Responsive:** Dioptimalkan untuk semua ukuran layar, mulai dari smartphone hingga desktop layar lebar.
-* **📩 Functional Contact Form:** Integrasi form kontak langsung ke email pribadi menggunakan **FormSubmit**.
-* **✨ Interactive Visuals:** Latar belakang partikel interaktif menggunakan HTML5 Canvas dan efek *scroll reveal*.
-* **⚡ High Performance:** Dibangun menggunakan Vanilla CSS dan JavaScript murni tanpa framework berat untuk memastikan loading yang sangat cepat.
+```
+<App>                     ← Root: state isDark, modalSrc
+  ├── <BgCanvas>          ← Canvas particles (useEffect + requestAnimationFrame)
+  ├── <Navbar>            ← Fixed nav, theme toggle, hamburger menu
+  ├── <Hero>              ← Intro section
+  ├── <StatsBar>          ← Angka statistik
+  ├── <About>             ← Bio + social links + experience cards
+  ├── <Portfolio>         ← Grid proyek + Load More
+  ├── <Skills>            ← Accordion + animated progress bar
+  ├── <Clients>           ← Marquee logo
+  ├── <Contact>           ← Form AJAX ke FormSubmit
+  ├── <footer>            ← Footer
+  ├── <BackToTop>         ← Tombol scroll ke atas
+  └── <ImageModal>        ← Lightbox gambar portfolio
+```
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 📦 Teknologi
 
-* **HTML5** - Struktur semantik.
-* **CSS3 (Custom Variables)** - Desain modern, transisi, dan manajemen tema.
-* **Vanilla JavaScript** - Animasi partikel, logika dark mode, dan interaktivitas.
-* **Google Fonts** - Tipografi profesional (Playfair Display & DM Sans).
-* **FormSubmit** - Penanganan pengiriman email dari form statis.
+- **React 18** — UI library
+- **Vite 5** — Build tool & dev server
+- **Google Fonts** — Playfair Display, DM Sans, Space Mono
+- **FormSubmit** — Form submission tanpa backend
+- **Cloudinary** — CDN untuk gambar & logo
 
 ---
 
-## 📂 Struktur Folder
+## 🎨 Kustomisasi
 
-```text
-portfolio/
-├── img/                # Aset gambar dan ikon
-│   ├── icon.ico        # Favicon website
-│   └── ...             # Screenshot proyek & foto profil
-├── index.html          # File utama (HTML, CSS, & JS terintegrasi)
-└── README.md           # Dokumentasi proyek ini
+Semua data (portfolio, skills, clients, dll.) berada di bagian atas `Portfolio.jsx` dalam bentuk konstanta array:
+
+```js
+const SKILL_GROUPS = [ ... ]   // Data skills
+const PORTFOLIO_ITEMS = [ ... ] // Data proyek
+const CLIENTS = [ ... ]        // Logo klien
+```
+
+Ubah data di sana untuk menyesuaikan konten tanpa menyentuh logika komponen.
