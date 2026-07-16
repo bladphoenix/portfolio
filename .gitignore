@@ -3,3 +3,6 @@
 # dependencies
 /node_modules
 
+# build output (published via gh-pages, not tracked on main)
+/dist
+

@@ -3,12 +3,19 @@
 ## 🗂️ Struktur Proyek
 
 ```
-├── index.html            ← Entry HTML (Vite)
+├── index.html            ← Entry HTML (Vite) — meta SEO, Open Graph, JSON-LD, fonts
 ├── vite.config.js        ← Konfigurasi Vite + React plugin
 ├── package.json          ← Dependensi & scripts
 ├── Portfolio.jsx         ← Komponen utama (semua section)
+├── public/
+│   ├── icon.png          ← Favicon
+│   ├── robots.txt        ← Crawler rules + pointer sitemap
+│   ├── sitemap.xml       ← Sitemap
+│   └── resume/resume.pdf ← Resume (link di navbar)
 └── src/
-    └── main.jsx          ← Mount React ke DOM
+    ├── main.jsx          ← Mount React ke DOM
+    ├── data.js           ← Data konten (skills, proyek, klien) + helper Cloudinary
+    └── styles.css        ← Seluruh styling global
 ```
 
 ## 🚀 Cara Menjalankan
@@ -90,12 +97,16 @@ npm run preview
 
 ## 🎨 Kustomisasi
 
-Semua data (portfolio, skills, clients, dll.) berada di bagian atas `Portfolio.jsx` dalam bentuk konstanta array:
+Semua data (portfolio, skills, clients, dll.) berada di `src/data.js` dalam bentuk konstanta array:
 
 ```js
-const SKILL_GROUPS = [ ... ]   // Data skills
-const PORTFOLIO_ITEMS = [ ... ] // Data proyek
-const CLIENTS = [ ... ]        // Logo klien
+export const SKILL_GROUPS = [ ... ]    // Data skills
+export const PORTFOLIO_ITEMS = [ ... ] // Data proyek
+export const CLIENTS = [ ... ]         // Logo klien
 ```
 
 Ubah data di sana untuk menyesuaikan konten tanpa menyentuh logika komponen.
+Proyek tanpa link live cukup diberi `link: "#"` — tombol "View Project" otomatis disembunyikan.
+
+Gambar Cloudinary dioptimalkan otomatis lewat helper `cld(url, width)` di `src/data.js`
+(menambahkan transformasi `f_auto,q_auto,w_{width}`). Styling global ada di `src/styles.css`.
