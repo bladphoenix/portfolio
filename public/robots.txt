@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bladphoenix.github.io/portfolio/sitemap.xml
+Sitemap: https://gigih.web.app/sitemap.xml
