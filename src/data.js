@@ -3,9 +3,23 @@
 // Cloudinary delivery helper: injects format/quality/width transforms into an upload URL.
 export const cld = (url, w) => url.replace("/upload/", `/upload/f_auto,q_auto,w_${w}/`);
 
+// Indonesian labels for translatable project tags; tags not listed here
+// (tech/brand names like SEO, Laravel, WordPress) render as-is in both languages.
+export const TAG_LABELS = {
+  "Cloud Infra": { id: "Infrastruktur Cloud" },
+  "Web Perf": { id: "Performa Web" },
+  "Web Design": { id: "Desain Web" },
+  "Travel & Tour": { id: "Wisata & Tur" },
+  "Booking System": { id: "Sistem Pemesanan" },
+  "Government": { id: "Pemerintahan" },
+  "Web App": { id: "Aplikasi Web" },
+};
+
 export const SKILL_GROUPS = [
   {
-    id: "code", icon: "{ }", name: "Code & Development", sub: "More than 6 years",
+    id: "code", icon: "{ }",
+    name: { en: "Code & Development", id: "Kode & Pengembangan" },
+    sub: { en: "More than 6 years", id: "Lebih dari 6 tahun" },
     skills: [
       { icon: "⚡", name: "JavaScript", pct: 82 },
       { icon: "🐘", name: "PHP", pct: 78 },
@@ -18,7 +32,9 @@ export const SKILL_GROUPS = [
     ],
   },
   {
-    id: "design", icon: "✦", name: "Design & Creative", sub: "More than 5 years",
+    id: "design", icon: "✦",
+    name: { en: "Design & Creative", id: "Desain & Kreatif" },
+    sub: { en: "More than 5 years", id: "Lebih dari 5 tahun" },
     skills: [
       { icon: "✏️", name: "Figma", pct: 88 },
       { icon: "🖌️", name: "Illustrator", pct: 82 },
@@ -28,7 +44,9 @@ export const SKILL_GROUPS = [
     ],
   },
   {
-    id: "seo", icon: "↗", name: "SEO & Marketing", sub: "More than 4 years",
+    id: "seo", icon: "↗",
+    name: { en: "SEO & Marketing", id: "SEO & Pemasaran" },
+    sub: { en: "More than 4 years", id: "Lebih dari 4 tahun" },
     skills: [
       { icon: "📈", name: "Google Ads", pct: 85 },
       { icon: "📘", name: "Meta Pixel", pct: 80 },
@@ -39,7 +57,9 @@ export const SKILL_GROUPS = [
     ],
   },
   {
-    id: "cloud", icon: "☁", name: "Cloud & Infrastructure", sub: "More than 3 years",
+    id: "cloud", icon: "☁",
+    name: { en: "Cloud & Infrastructure", id: "Cloud & Infrastruktur" },
+    sub: { en: "More than 3 years", id: "Lebih dari 3 tahun" },
     skills: [
       { icon: "🌩️", name: "Cloudflare", pct: 85 },
       { icon: "🔥", name: "Firebase", pct: 75 },
@@ -60,7 +80,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Whitebox.asia",
     tags: ["Cloud Infra", "Web Perf", "SEO"],
     title: "Whitebox.asia",
-    desc: "A specialist platform focusing on high-performance websites, SEO optimization, and secure, scalable cloud infrastructure management.",
+    desc: {
+      en: "A specialist platform focusing on high-performance websites, SEO optimization, and secure, scalable cloud infrastructure management.",
+      id: "Platform spesialis yang berfokus pada situs web berperforma tinggi, optimasi SEO, serta pengelolaan infrastruktur cloud yang aman dan skalabel.",
+    },
     link: "https://whitebox.asia",
   },
   {
@@ -70,7 +93,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Bali Sunday Tour",
     tags: ["Web Design", "Travel & Tour"],
     title: "Bali Sunday Tour",
-    desc: "A premium travel platform offering luxury tours to experience hidden treasures and new adventures across Bali.",
+    desc: {
+      en: "A premium travel platform offering luxury tours to experience hidden treasures and new adventures across Bali.",
+      id: "Platform wisata premium yang menawarkan tur mewah untuk menjelajahi permata tersembunyi dan petualangan baru di seluruh Bali.",
+    },
     link: "https://balisundaytour.com",
   },
   {
@@ -80,7 +106,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Flower Pool Bali",
     tags: ["Web Design", "Booking System"],
     title: "Flower Pool Bali",
-    desc: "An elegant service booking platform offering custom flower pools, villa decorations, and surprise proposal setups in Bali.",
+    desc: {
+      en: "An elegant service booking platform offering custom flower pools, villa decorations, and surprise proposal setups in Bali.",
+      id: "Platform pemesanan layanan yang elegan untuk kolam bunga kustom, dekorasi vila, dan persiapan lamaran kejutan di Bali.",
+    },
     link: "https://flowerpoolbali.com",
   },
   {
@@ -90,7 +119,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "React Movie",
     tags: ["React JS", "API"],
     title: "React Movie",
-    desc: "Film website built with React JS using a third-party movie API.",
+    desc: {
+      en: "Film website built with React JS using a third-party movie API.",
+      id: "Situs web film yang dibangun dengan React JS menggunakan API film pihak ketiga.",
+    },
     link: "#",
   },
   {
@@ -100,7 +132,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Malang Strudel",
     tags: ["Web Design"],
     title: "Malang Strudel",
-    desc: "Creation of the Abimanyu Strudel brand website.",
+    desc: {
+      en: "Creation of the Abimanyu Strudel brand website.",
+      id: "Pembuatan situs web brand Abimanyu Strudel.",
+    },
     link: "#",
   },
   {
@@ -110,7 +145,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Personal Blog",
     tags: ["Materialize CSS"],
     title: "Personal Blog",
-    desc: "Personal website built with Materialize CSS framework.",
+    desc: {
+      en: "Personal website built with Materialize CSS framework.",
+      id: "Situs web pribadi yang dibangun dengan framework Materialize CSS.",
+    },
     link: "#",
   },
   {
@@ -120,7 +158,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Malang News",
     tags: ["WordPress", "SEO"],
     title: "Malang News",
-    desc: "A comprehensive news website dedicated to covering stories about the city of Malang.",
+    desc: {
+      en: "A comprehensive news website dedicated to covering stories about the city of Malang.",
+      id: "Situs berita komprehensif yang khusus meliput kabar seputar Kota Malang.",
+    },
     link: "#",
   },
   {
@@ -130,7 +171,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "PSHT Singosari",
     tags: ["Laravel"],
     title: "PSHT Singosari",
-    desc: "Organization website built using the Laravel framework.",
+    desc: {
+      en: "Organization website built using the Laravel framework.",
+      id: "Situs web organisasi yang dibangun menggunakan framework Laravel.",
+    },
     link: "#",
   },
   {
@@ -140,7 +184,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Beautiful News",
     tags: ["WordPress"],
     title: "Beautiful News",
-    desc: "Simple elegant news website using WordPress.",
+    desc: {
+      en: "Simple elegant news website using WordPress.",
+      id: "Situs berita sederhana nan elegan menggunakan WordPress.",
+    },
     link: "#",
   },
   {
@@ -150,7 +197,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "PSHT Data Management",
     tags: ["Laravel", "Web App"],
     title: "PSHT Data Management",
-    desc: "Data storage and management web application built on Laravel.",
+    desc: {
+      en: "Data storage and management web application built on Laravel.",
+      id: "Aplikasi web penyimpanan dan pengelolaan data berbasis Laravel.",
+    },
     link: "#",
   },
   {
@@ -160,7 +210,10 @@ export const PORTFOLIO_ITEMS = [
     alt: "Barenlitbang Info System",
     tags: ["Government", "Web App"],
     title: "Barenlitbang Info System",
-    desc: "Malang City Information System for the Barenlitbang department.",
+    desc: {
+      en: "Malang City Information System for the Barenlitbang department.",
+      id: "Sistem Informasi Kota Malang untuk Barenlitbang Kota Malang.",
+    },
     link: "#",
   },
 ];

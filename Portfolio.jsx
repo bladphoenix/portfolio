@@ -1,5 +1,17 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { SKILL_GROUPS, PORTFOLIO_ITEMS, CLIENTS, cld } from "./src/data.js";
+import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
+import { SKILL_GROUPS, PORTFOLIO_ITEMS, CLIENTS, TAG_LABELS, cld } from "./src/data.js";
+import { UI } from "./src/i18n.js";
+
+// localStorage can throw (blocked cookies / private mode); fall back gracefully.
+const storage = {
+  get(k) { try { return window.localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { window.localStorage.setItem(k, v); } catch { /* storage blocked */ } },
+};
+
+// ─── LANGUAGE ────────────────────────────────────────────────────────────────
+
+const LangContext = createContext(null);
+const useLang = () => useContext(LangContext);
 
 // ─── COMPONENTS ──────────────────────────────────────────────────────────────
 
@@ -121,6 +133,7 @@ function BgCanvas() {
 }
 
 function Navbar({ isDark, toggleTheme }) {
+  const { t, lang, setLang } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -143,12 +156,12 @@ function Navbar({ isDark, toggleTheme }) {
   };
 
   const navLinks = [
-    { href: "#home", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#portfolio", label: "Portfolio" },
-    { href: "#skills", label: "Skills" },
-    { href: "#clients", label: "Clients" },
-    { href: "resume/resume.pdf", label: "Resume", target: "_blank" },
+    { href: "#home", label: t.nav.home },
+    { href: "#about", label: t.nav.about },
+    { href: "#portfolio", label: t.nav.portfolio },
+    { href: "#skills", label: t.nav.skills },
+    { href: "#clients", label: t.nav.clients },
+    { href: "resume/resume.pdf", label: t.nav.resume, target: "_blank" },
   ];
 
   return (
@@ -158,13 +171,21 @@ function Navbar({ isDark, toggleTheme }) {
           <a href="#home" className="nav-logo">Gigih<span>Ling</span></a>
           <ul className="nav-links">
             {navLinks.map((l) => (
-              <li key={l.label}>
+              <li key={l.href}>
                 <a href={l.href} target={l.target} rel={l.target ? "noreferrer" : undefined}>{l.label}</a>
               </li>
             ))}
           </ul>
           <div className="nav-controls">
-            <button className="theme-switch" onClick={toggleTheme} aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}>
+            <button
+              className="lang-switch"
+              onClick={() => setLang(lang === "en" ? "id" : "en")}
+              aria-label={t.a11y.langSwitch}
+              lang={lang === "en" ? "id" : "en"}
+            >
+              {lang === "en" ? "ID" : "EN"}
+            </button>
+            <button className="theme-switch" onClick={toggleTheme} aria-label={isDark ? t.a11y.themeToLight : t.a11y.themeToDark}>
               {isDark ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
@@ -179,11 +200,11 @@ function Navbar({ isDark, toggleTheme }) {
                 </svg>
               )}
             </button>
-            <a href="#contact" className="nav-cta">Contact Me</a>
+            <a href="#contact" className="nav-cta">{t.nav.contactCta}</a>
             <button
               className={`hamburger${menuOpen ? " open" : ""}`}
               onClick={toggleMenu}
-              aria-label="Toggle navigation menu"
+              aria-label={t.a11y.toggleNav}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
             >
@@ -194,8 +215,8 @@ function Navbar({ isDark, toggleTheme }) {
       </nav>
 
       <div id="mobile-menu" className={`mobile-menu${menuOpen ? " open" : ""}`}>
-        {[...navLinks, { href: "#contact", label: "Contact" }].map((l) => (
-          <a key={l.label} href={l.href} target={l.target} rel={l.target ? "noreferrer" : undefined} onClick={closeMenu}>{l.label}</a>
+        {[...navLinks, { href: "#contact", label: t.nav.contact }].map((l) => (
+          <a key={l.href} href={l.href} target={l.target} rel={l.target ? "noreferrer" : undefined} onClick={closeMenu}>{l.label}</a>
         ))}
       </div>
     </>
@@ -203,6 +224,7 @@ function Navbar({ isDark, toggleTheme }) {
 }
 
 function Hero() {
+  const { t } = useLang();
   return (
     <section id="home">
       <div className="container">
@@ -210,21 +232,20 @@ function Hero() {
           <div>
             <div className="hero-badge reveal">
               <div className="hero-badge-dot" />
-              Available for new projects
+              {t.hero.badge}
             </div>
-            <p className="hero-role reveal reveal-delay-1">SEO Specialist &amp; Web Designer</p>
+            <p className="hero-role reveal reveal-delay-1">{t.hero.role}</p>
             <h1 className="hero-name reveal reveal-delay-1">
-              Hello, I'm<br /><span className="green">Gigih Ling</span>
+              {t.hero.greeting}<br /><span className="green">Gigih Ling</span>
             </h1>
             <p className="hero-desc reveal reveal-delay-2">
-              I bring boring ads to life and craft digital experiences that resonate.
-              Specializing in SEO, web design, and digital marketing.
+              {t.hero.desc}
             </p>
             <div className="hero-actions reveal reveal-delay-3">
               <a href="https://t.me/LingLtd" target="_blank" className="btn-primary" rel="noreferrer">
-                Get in Touch
+                {t.hero.ctaPrimary}
               </a>
-              <a href="#portfolio" className="btn-outline">View Work</a>
+              <a href="#portfolio" className="btn-outline">{t.hero.ctaSecondary}</a>
             </div>
           </div>
           <div className="hero-visual reveal reveal-delay-2">
@@ -249,18 +270,19 @@ function Hero() {
 }
 
 function StatsBar() {
+  const { t } = useLang();
   const stats = [
-    { num: "5", suffix: "+", label: "Years Experience" },
-    { num: "9", suffix: "+", label: "Clients Served" },
-    { num: "11", suffix: "+", label: "Projects Done" },
-    { num: "30", suffix: "+", label: "Tech Skills" },
+    { num: "5", suffix: "+", label: t.stats.years },
+    { num: "9", suffix: "+", label: t.stats.clients },
+    { num: "11", suffix: "+", label: t.stats.projects },
+    { num: "30", suffix: "+", label: t.stats.skills },
   ];
   return (
     <div className="stats-bar">
       <div className="container">
         <div className="stats-grid">
           {stats.map((s, i) => (
-            <div key={s.label} className={`stat-item reveal${i ? ` reveal-delay-${i}` : ""}`}>
+            <div key={i} className={`stat-item reveal${i ? ` reveal-delay-${i}` : ""}`}>
               <div className="stat-num">{s.num}<span>{s.suffix}</span></div>
               <div className="stat-label">{s.label}</div>
             </div>
@@ -272,6 +294,7 @@ function StatsBar() {
 }
 
 function About() {
+  const { t } = useLang();
   const socials = [
     {
       href: "https://www.youtube.com/@whatever-inc", title: "YouTube",
@@ -290,15 +313,9 @@ function About() {
       icon: <svg width="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>,
     },
     {
-      href: "https://maps.app.goo.gl/AQe1npft45eibBY67", title: "Location",
+      href: "https://maps.app.goo.gl/AQe1npft45eibBY67", title: t.a11y.location,
       icon: <svg width="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>,
     },
-  ];
-
-  const experiences = [
-    { year: "2020 — PRESENT", title: "SEO Specialist & Digital Marketer", desc: "Google Ads, Meta Pixel, Analytics, Search Console, Ahrefs — full-stack SEO strategy and execution." },
-    { year: "2019 — PRESENT", title: "Full-Stack Web Developer", desc: "Building with Laravel, React, Next.js, Node.js and deploying on DigitalOcean, Tencent Cloud, Cloudflare." },
-    { year: "2018 — PRESENT", title: "UI/UX & Graphic Designer", desc: "Figma, Adobe Illustrator, Photoshop, Canva — from wireframe to pixel-perfect production." },
   ];
 
   return (
@@ -306,26 +323,25 @@ function About() {
       <div className="container">
         <div className="about-grid">
           <div className="about-left">
-            <div className="tag reveal">About Me</div>
-            <h2 className="section-title reveal reveal-delay-1">Welcome to the world of SEO</h2>
+            <div className="tag reveal">{t.about.tag}</div>
+            <h2 className="section-title reveal reveal-delay-1">{t.about.title}</h2>
             <p className="reveal reveal-delay-2">
-              Search Engine Optimization is not just an acronym — it's a craft. I combine technical SEO
-              expertise with creative web design to help businesses stand out in the digital landscape.
+              {t.about.p1}
             </p>
             <p className="reveal reveal-delay-2">
-              Based in Jakarta, Indonesia. Open to remote collaborations worldwide. Let's build something great together.
+              {t.about.p2}
             </p>
             <div className="social-links reveal reveal-delay-3">
               {socials.map((s) => (
-                <a key={s.title} href={s.href} target="_blank" rel="noreferrer" className="social-btn" title={s.title} aria-label={s.title}>
+                <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="social-btn" title={s.title} aria-label={s.title}>
                   {s.icon}
                 </a>
               ))}
             </div>
           </div>
           <div className="about-right">
-            {experiences.map((e, i) => (
-              <div key={e.year} className={`experience-card reveal${i ? ` reveal-delay-${i}` : ""}`}>
+            {t.about.experiences.map((e, i) => (
+              <div key={i} className={`experience-card reveal${i ? ` reveal-delay-${i}` : ""}`}>
                 <div className="exp-year">{e.year}</div>
                 <h3 className="exp-title">{e.title}</h3>
                 <div className="exp-desc">{e.desc}</div>
@@ -339,6 +355,7 @@ function About() {
 }
 
 function PortfolioSection({ onImageClick }) {
+  const { t, lang } = useLang();
   const [showAll, setShowAll] = useState(false);
   const visibleItems = showAll ? PORTFOLIO_ITEMS : PORTFOLIO_ITEMS.filter((p) => !p.hidden);
 
@@ -346,9 +363,9 @@ function PortfolioSection({ onImageClick }) {
     <section id="portfolio">
       <div className="container">
         <div className="portfolio-header reveal">
-          <div className="tag">Portfolio</div>
-          <h2 className="section-title">Latest Projects</h2>
-          <p>Revolutionizing collaboration in the digital workspace.</p>
+          <div className="tag">{t.portfolio.tag}</div>
+          <h2 className="section-title">{t.portfolio.title}</h2>
+          <p>{t.portfolio.subtitle}</p>
         </div>
         <div className="portfolio-grid">
           {visibleItems.map((p) => (
@@ -360,7 +377,7 @@ function PortfolioSection({ onImageClick }) {
                     type="button"
                     className="port-zoom"
                     onClick={() => onImageClick(p.img)}
-                    aria-label={`View ${p.title} screenshot full size`}
+                    aria-label={t.portfolio.zoomAria.replace("{title}", p.title)}
                   >
                     <img src={cld(p.img, 800)} alt={p.alt} width="800" height="450" loading="lazy" decoding="async" />
                   </button>
@@ -368,13 +385,15 @@ function PortfolioSection({ onImageClick }) {
               </div>
               <div className="port-body">
                 <div className="port-tags">
-                  {p.tags.map((t) => <span key={t} className="port-tag">{t}</span>)}
+                  {p.tags.map((tag) => (
+                    <span key={tag} className="port-tag">{TAG_LABELS[tag]?.[lang] ?? tag}</span>
+                  ))}
                 </div>
                 <h3 className="port-title">{p.title}</h3>
-                <div className="port-desc">{p.desc}</div>
+                <div className="port-desc">{p.desc[lang]}</div>
                 {p.link && p.link !== "#" && (
                   <a href={p.link} target="_blank" rel="noreferrer" className="port-link">
-                    View Project →
+                    {t.portfolio.view}
                   </a>
                 )}
               </div>
@@ -384,7 +403,7 @@ function PortfolioSection({ onImageClick }) {
         {!showAll && (
           <div className="load-more-container reveal">
             <button className="btn-load" onClick={() => setShowAll(true)}>
-              Load More Projects ↓
+              {t.portfolio.loadMore}
             </button>
           </div>
         )}
@@ -416,6 +435,7 @@ function SkillBar({ pct, isOpen }) {
 }
 
 function Skills() {
+  const { t, lang } = useLang();
   const [openGroup, setOpenGroup] = useState(0);
 
   const toggle = (i) => setOpenGroup((prev) => (prev === i ? -1 : i));
@@ -424,9 +444,9 @@ function Skills() {
     <section id="skills">
       <div className="container">
         <div className="skills-header reveal">
-          <div className="tag">Tech Skills</div>
-          <h2 className="section-title">Programming, Design &amp; SEO Tools</h2>
-          <p>A full arsenal of modern tools and technologies to bring any vision to life.</p>
+          <div className="tag">{t.skills.tag}</div>
+          <h2 className="section-title">{t.skills.title}</h2>
+          <p>{t.skills.subtitle}</p>
         </div>
         <div className="skills-accordion-grid reveal">
           {SKILL_GROUPS.map((g, gi) => {
@@ -444,8 +464,8 @@ function Skills() {
                   >
                     <span className="skill-group-icon">{g.icon}</span>
                     <span className="skill-group-meta">
-                      <span className="skill-group-name">{g.name}</span>
-                      <span className="skill-group-sub">{g.sub}</span>
+                      <span className="skill-group-name">{g.name[lang]}</span>
+                      <span className="skill-group-sub">{g.sub[lang]}</span>
                     </span>
                     <span className="skill-group-chevron">
                       <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -477,22 +497,23 @@ function Skills() {
 }
 
 function Clients() {
+  const { t } = useLang();
   const [paused, setPaused] = useState(false);
   const tripled = [...CLIENTS, ...CLIENTS, ...CLIENTS];
   return (
     <section id="clients">
       <div className="container">
         <div className="clients-header reveal">
-          <div className="tag">Clients</div>
-          <h2 className="section-title">Companies That Went Beyond Their Goals</h2>
-          <p>Trusted by local businesses and national brands across Indonesia.</p>
+          <div className="tag">{t.clients.tag}</div>
+          <h2 className="section-title">{t.clients.title}</h2>
+          <p>{t.clients.subtitle}</p>
           <button
             type="button"
             className="marquee-toggle"
             aria-pressed={paused}
             onClick={() => setPaused((p) => !p)}
           >
-            {paused ? "▶ Play animation" : "⏸ Pause animation"}
+            {paused ? t.clients.play : t.clients.pause}
           </button>
         </div>
       </div>
@@ -510,6 +531,7 @@ function Clients() {
 }
 
 function Contact() {
+  const { t } = useLang();
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
@@ -537,24 +559,24 @@ function Contact() {
       <div className="container">
         <div className="contact-grid">
           <div className="contact-left">
-            <div className="tag reveal">Contact</div>
-            <h2 className="section-title reveal reveal-delay-1">Let's Work Together</h2>
+            <div className="tag reveal">{t.contact.tag}</div>
+            <h2 className="section-title reveal reveal-delay-1">{t.contact.title}</h2>
             <p className="reveal reveal-delay-2">
-              Have a project in mind or just want to say hello? I'd love to hear from you. Let's create something amazing.
+              {t.contact.p}
             </p>
             <div className="reveal reveal-delay-2">
               <div className="contact-info-item">
                 <div className="contact-info-icon">💬</div>
                 <div>
-                  <div className="contact-info-label">TELEGRAM</div>
+                  <div className="contact-info-label">{t.contact.telegramLabel}</div>
                   <div className="contact-info-val">@LingLtd</div>
                 </div>
               </div>
               <div className="contact-info-item">
                 <div className="contact-info-icon">📍</div>
                 <div>
-                  <div className="contact-info-label">LOCATION</div>
-                  <div className="contact-info-val">Taman Sari, West Jakarta City, Indonesia</div>
+                  <div className="contact-info-label">{t.contact.locationLabel}</div>
+                  <div className="contact-info-val">{t.contact.locationValue}</div>
                 </div>
               </div>
             </div>
@@ -563,30 +585,31 @@ function Contact() {
           <div className="reveal reveal-delay-1">
             {status === "sent" ? (
               <div className="form-success" role="status" tabIndex={-1} ref={(el) => el?.focus()}>
-                ✅ Message sent! I'll get back to you soon.
+                {t.contact.success}
               </div>
             ) : (
               <form className="contact-form" onSubmit={handleSubmit}>
                 {status === "error" && (
                   <div className="form-error" role="alert">
-                    ⚠️ Your message could not be sent. Please try again, or reach me on{" "}
-                    <a href="https://t.me/LingLtd" target="_blank" rel="noreferrer">Telegram @LingLtd</a>.
+                    {t.contact.errBefore}
+                    <a href="https://t.me/LingLtd" target="_blank" rel="noreferrer">{t.contact.errLink}</a>
+                    {t.contact.errAfter}
                   </div>
                 )}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="contact-name">NAME</label>
-                  <input id="contact-name" type="text" name="name" className="form-input" placeholder="Your full name" value={form.name} onChange={handleChange} required />
+                  <label className="form-label" htmlFor="contact-name">{t.contact.nameLabel}</label>
+                  <input id="contact-name" type="text" name="name" className="form-input" placeholder={t.contact.namePh} value={form.name} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="contact-email">EMAIL</label>
-                  <input id="contact-email" type="email" name="email" className="form-input" placeholder="your@email.com" value={form.email} onChange={handleChange} required />
+                  <label className="form-label" htmlFor="contact-email">{t.contact.emailLabel}</label>
+                  <input id="contact-email" type="email" name="email" className="form-input" placeholder={t.contact.emailPh} value={form.email} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="contact-message">MESSAGE</label>
-                  <textarea id="contact-message" name="message" className="form-textarea" placeholder="Tell me about your project..." value={form.message} onChange={handleChange} required />
+                  <label className="form-label" htmlFor="contact-message">{t.contact.messageLabel}</label>
+                  <textarea id="contact-message" name="message" className="form-textarea" placeholder={t.contact.messagePh} value={form.message} onChange={handleChange} required />
                 </div>
                 <button type="submit" className="btn-send" disabled={status === "sending"}>
-                  {status === "sending" ? "Sending…" : "Send Message"}
+                  {status === "sending" ? t.contact.sending : t.contact.send}
                 </button>
               </form>
             )}
@@ -598,6 +621,7 @@ function Contact() {
 }
 
 function ImageModal({ src, onClose }) {
+  const { t } = useLang();
   const closeRef = useRef(null);
 
   useEffect(() => {
@@ -630,16 +654,17 @@ function ImageModal({ src, onClose }) {
       className="image-modal show"
       role="dialog"
       aria-modal="true"
-      aria-label="Project screenshot"
+      aria-label={t.a11y.dialog}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <button ref={closeRef} className="close-modal" onClick={onClose} aria-label="Close image">×</button>
-      <img className="modal-content" src={cld(src, 1600)} alt="Portfolio project screenshot, full size" />
+      <button ref={closeRef} className="close-modal" onClick={onClose} aria-label={t.a11y.closeImage}>×</button>
+      <img className="modal-content" src={cld(src, 1600)} alt={t.a11y.dialog} />
     </div>
   );
 }
 
 function BackToTop() {
+  const { t } = useLang();
   const [show, setShow] = useState(false);
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 400);
@@ -648,7 +673,7 @@ function BackToTop() {
   }, []);
 
   return (
-    <a href="#home" id="back-top" className={show ? "show" : ""} aria-label="Back to top">↑</a>
+    <a href="#home" id="back-top" className={show ? "show" : ""} aria-label={t.a11y.backTop}>↑</a>
   );
 }
 
@@ -684,18 +709,28 @@ function useScrollReveal() {
 // ─── APP ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
-  const [isDark, setIsDark] = useState(() => localStorage.getItem("theme") !== "light");
+  const [isDark, setIsDark] = useState(() => storage.get("theme") !== "light");
+  const [lang, setLang] = useState(() => {
+    const saved = storage.get("lang");
+    if (saved === "en" || saved === "id") return saved;
+    return navigator.language?.toLowerCase().startsWith("id") ? "id" : "en";
+  });
   const [modalSrc, setModalSrc] = useState(null);
 
   useScrollReveal();
 
   useEffect(() => {
+    storage.set("lang", lang);
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  useEffect(() => {
     if (isDark) {
       document.body.classList.remove("light-mode");
-      localStorage.setItem("theme", "dark");
+      storage.set("theme", "dark");
     } else {
       document.body.classList.add("light-mode");
-      localStorage.setItem("theme", "light");
+      storage.set("theme", "light");
     }
   }, [isDark]);
 
@@ -703,8 +738,10 @@ export default function Portfolio() {
   const openModal = useCallback((src) => setModalSrc(src), []);
   const closeModal = useCallback(() => setModalSrc(null), []);
 
+  const t = UI[lang];
+
   return (
-    <>
+    <LangContext.Provider value={{ t, lang, setLang }}>
       <BgCanvas />
       <Navbar isDark={isDark} toggleTheme={toggleTheme} />
       <Hero />
@@ -719,7 +756,7 @@ export default function Portfolio() {
           <div className="footer-inner">
             <a href="#home" className="footer-logo">Gigih<span>Ling</span></a>
             <p className="footer-copy">
-              © {new Date().getFullYear()} Gigihling — Built with ♥ using{" "}
+              © {new Date().getFullYear()} Gigihling — {t.footer.made}{" "}
               <a href="https://react.dev" target="_blank" rel="noreferrer">React</a>
             </p>
           </div>
@@ -727,6 +764,6 @@ export default function Portfolio() {
       </footer>
       <BackToTop />
       <ImageModal src={modalSrc} onClose={closeModal} />
-    </>
+    </LangContext.Provider>
   );
 }

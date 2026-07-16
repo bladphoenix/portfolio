@@ -15,6 +15,7 @@
 └── src/
     ├── main.jsx          ← Mount React ke DOM
     ├── data.js           ← Data konten (skills, proyek, klien) + helper Cloudinary
+    ├── i18n.js           ← Kamus teks UI dua bahasa (EN/ID)
     └── styles.css        ← Seluruh styling global
 ```
 
@@ -62,13 +63,14 @@ npm run preview
 | Scroll Reveal (IntersectionObserver) | ✅ |
 | Back to top button | ✅ |
 | Footer | ✅ |
+| Multi-bahasa EN/ID (toggle navbar, localStorage + deteksi browser) | ✅ |
 
 ---
 
 ## 🧩 Arsitektur Komponen React
 
 ```
-<App>                     ← Root: state isDark, modalSrc
+<App>                     ← Root: state isDark, modalSrc, lang (LangContext.Provider)
   ├── <BgCanvas>          ← Canvas particles (useEffect + requestAnimationFrame)
   ├── <Navbar>            ← Fixed nav, theme toggle, hamburger menu
   ├── <Hero>              ← Intro section
@@ -107,6 +109,12 @@ export const CLIENTS = [ ... ]         // Logo klien
 
 Ubah data di sana untuk menyesuaikan konten tanpa menyentuh logika komponen.
 Proyek tanpa link live cukup diberi `link: "#"` — tombol "View Project" otomatis disembunyikan.
+
+**Konten dwibahasa:** `PORTFOLIO_ITEMS[].desc` serta `SKILL_GROUPS[].name` dan `.sub` berupa objek
+`{ en: "...", id: "..." }` — kedua bahasa wajib diisi. Terjemahan tag proyek ada di `TAG_LABELS`
+(tag yang tidak terdaftar dirender apa adanya). Semua teks UI lain (judul section, label tombol,
+placeholder, aria-label) ada di `src/i18n.js` dalam objek `UI.en` / `UI.id` — struktur key kedua
+bahasa harus selalu sama.
 
 Gambar Cloudinary dioptimalkan otomatis lewat helper `cld(url, width)` di `src/data.js`
 (menambahkan transformasi `f_auto,q_auto,w_{width}`). Styling global ada di `src/styles.css`.
